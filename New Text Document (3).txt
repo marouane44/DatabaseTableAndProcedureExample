@@ -1,0 +1,49 @@
+CREATE TABLE NewTable (
+id int not null primary key identity,
+date_one date not null,
+date_two date not null,
+
+
+);
+INSERT INTO NewTable (date_one, date_two)
+VALUES
+    ('2022-01-01', '2023-02-01'),
+    ('2023-02-01', '2024-04-10'),
+    ('2024-04-10', '2025-06-20');
+
+
+
+	select * from  NewTable;
+	go
+
+
+CREATE PROCEDURE procedure_name_one
+    @givenDate date
+AS
+BEGIN
+    DECLARE @id int, @date_one date, @date_two date
+
+    DECLARE cursor_name CURSOR FOR
+        SELECT id, date_one, date_two
+        FROM NewTable
+
+    OPEN cursor_name
+
+    FETCH NEXT FROM cursor_name INTO @id, @date_one, @date_two
+
+    WHILE @@FETCH_STATUS = 0
+    BEGIN
+        IF @givenDate >= @date_one AND @givenDate <= @date_two
+        BEGIN
+            -- Print the ID of the row that matches the condition
+            PRINT 'Found row with ID: ' + CONVERT(varchar, @id)
+        END
+
+        FETCH NEXT FROM cursor_name INTO @id, @date_one, @date_two
+    END
+
+    CLOSE cursor_name
+    DEALLOCATE cursor_name
+END
+EXEC procedure_name_one '2023-02-20';
+	select * from  NewTable;
